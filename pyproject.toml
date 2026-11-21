@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ontology-vs-readme-bench"
+version = "0.1.0"
+description = "Controlled experiment comparing Bare RDS vs Natural Language README vs Raw OWL vs OWL+Reasoner/SHACL for Agentic AI in enterprise data environments."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "rdflib>=7.0.0",
+    "owlrl>=6.0.2",
+    "pyshacl>=0.26.0",
+    "openai>=1.40.0",
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+ovr-bench = "bench.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

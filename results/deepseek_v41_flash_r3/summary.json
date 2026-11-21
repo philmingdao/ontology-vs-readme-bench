@@ -1,0 +1,1199 @@
+{
+  "engineering_roi": {
+    "arms": {
+      "bare_rds": {
+        "semantic_files": [],
+        "authoring_lines": 0,
+        "runtime_code_lines": 0,
+        "semantic_bytes": 0,
+        "semantic_est_tokens": 0
+      },
+      "readme_md": {
+        "semantic_files": [
+          "semantics/enterprise_readme.md"
+        ],
+        "authoring_lines": 189,
+        "runtime_code_lines": 0,
+        "semantic_bytes": 12781,
+        "semantic_est_tokens": 3362
+      },
+      "raw_owl": {
+        "semantic_files": [
+          "semantics/ontology.ttl"
+        ],
+        "authoring_lines": 351,
+        "runtime_code_lines": 0,
+        "semantic_bytes": 14465,
+        "semantic_est_tokens": 3807
+      },
+      "owl_reasoner": {
+        "semantic_files": [
+          "semantics/ontology.ttl",
+          "semantics/shapes.ttl"
+        ],
+        "authoring_lines": 573,
+        "runtime_code_lines": 425,
+        "semantic_bytes": 22154,
+        "semantic_est_tokens": 5830
+      }
+    },
+    "owl_runtime": {
+      "raw_triples": 950,
+      "inferred_triples": 2374,
+      "new_inferred_triples": 1424,
+      "reasoning_ms": 342.39,
+      "shacl_ms": 518.44
+    }
+  },
+  "pricing": {
+    "input_price_per_1m_usd": 0.15,
+    "output_price_per_1m_usd": 0.6
+  },
+  "models": {
+    "deepseek-v4.1-flash": {
+      "is_mock": false,
+      "arms": [
+        "bare_rds",
+        "readme_md",
+        "raw_owl",
+        "owl_reasoner"
+      ],
+      "overall_by_arm": {
+        "bare_rds": {
+          "n": 120,
+          "passed": 46,
+          "accuracy": 0.3833,
+          "ci95_low": 0.3012,
+          "ci95_high": 0.4727,
+          "avg_prompt_tokens": 123160.3,
+          "avg_completion_tokens": 14043.6,
+          "avg_total_tokens": 137203.9,
+          "avg_turns": 7.16,
+          "avg_tool_calls": 17.77,
+          "avg_latency_ms": 123546.8,
+          "total_est_cost_usd": 3.228
+        },
+        "readme_md": {
+          "n": 120,
+          "passed": 120,
+          "accuracy": 1.0,
+          "ci95_low": 0.969,
+          "ci95_high": 1.0,
+          "avg_prompt_tokens": 34157.4,
+          "avg_completion_tokens": 1312.5,
+          "avg_total_tokens": 35469.9,
+          "avg_turns": 3.57,
+          "avg_tool_calls": 6.07,
+          "avg_latency_ms": 11202.0,
+          "total_est_cost_usd": 0.7093
+        },
+        "raw_owl": {
+          "n": 120,
+          "passed": 120,
+          "accuracy": 1.0,
+          "ci95_low": 0.969,
+          "ci95_high": 1.0,
+          "avg_prompt_tokens": 38013.7,
+          "avg_completion_tokens": 1494.2,
+          "avg_total_tokens": 39507.9,
+          "avg_turns": 3.58,
+          "avg_tool_calls": 6.24,
+          "avg_latency_ms": 12335.7,
+          "total_est_cost_usd": 0.7918
+        },
+        "owl_reasoner": {
+          "n": 120,
+          "passed": 120,
+          "accuracy": 1.0,
+          "ci95_low": 0.969,
+          "ci95_high": 1.0,
+          "avg_prompt_tokens": 37017.5,
+          "avg_completion_tokens": 1277.9,
+          "avg_total_tokens": 38295.4,
+          "avg_turns": 3.42,
+          "avg_tool_calls": 6.03,
+          "avg_latency_ms": 11034.8,
+          "total_est_cost_usd": 0.7583
+        }
+      },
+      "tier_by_arm": {
+        "bare_rds": {
+          "T1": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          },
+          "T2": {
+            "n": 30,
+            "passed": 0,
+            "accuracy": 0.0,
+            "ci95_low": 0.0,
+            "ci95_high": 0.1135
+          },
+          "T3": {
+            "n": 30,
+            "passed": 15,
+            "accuracy": 0.5,
+            "ci95_low": 0.3315,
+            "ci95_high": 0.6685
+          },
+          "T4": {
+            "n": 30,
+            "passed": 1,
+            "accuracy": 0.0333,
+            "ci95_low": 0.0059,
+            "ci95_high": 0.1667
+          }
+        },
+        "readme_md": {
+          "T1": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          },
+          "T2": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          },
+          "T3": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          },
+          "T4": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          }
+        },
+        "raw_owl": {
+          "T1": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          },
+          "T2": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          },
+          "T3": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          },
+          "T4": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          }
+        },
+        "owl_reasoner": {
+          "T1": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          },
+          "T2": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          },
+          "T3": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          },
+          "T4": {
+            "n": 30,
+            "passed": 30,
+            "accuracy": 1.0,
+            "ci95_low": 0.8865,
+            "ci95_high": 1.0
+          }
+        }
+      },
+      "tier4_detail": {
+        "bare_rds": {
+          "n": 30,
+          "decision_acc": 0.8333,
+          "rules_exact_acc": 0.0333,
+          "avg_rules_f1": 0.0333
+        },
+        "readme_md": {
+          "n": 30,
+          "decision_acc": 1.0,
+          "rules_exact_acc": 1.0,
+          "avg_rules_f1": 1.0
+        },
+        "raw_owl": {
+          "n": 30,
+          "decision_acc": 1.0,
+          "rules_exact_acc": 1.0,
+          "avg_rules_f1": 1.0
+        },
+        "owl_reasoner": {
+          "n": 30,
+          "decision_acc": 1.0,
+          "rules_exact_acc": 1.0,
+          "avg_rules_f1": 1.0
+        }
+      },
+      "mcnemar": {
+        "readme_md_vs_bare_rds": {
+          "n_pairs": 120,
+          "a_only_pass": 74,
+          "b_only_pass": 0,
+          "discordant": 74,
+          "p_value": 0.0,
+          "significant_05": true
+        },
+        "readme_md_vs_raw_owl": {
+          "n_pairs": 120,
+          "a_only_pass": 0,
+          "b_only_pass": 0,
+          "discordant": 0,
+          "p_value": 1.0,
+          "significant_05": false
+        },
+        "readme_md_vs_owl_reasoner": {
+          "n_pairs": 120,
+          "a_only_pass": 0,
+          "b_only_pass": 0,
+          "discordant": 0,
+          "p_value": 1.0,
+          "significant_05": false
+        },
+        "owl_reasoner_vs_raw_owl": {
+          "n_pairs": 120,
+          "a_only_pass": 0,
+          "b_only_pass": 0,
+          "discordant": 0,
+          "p_value": 1.0,
+          "significant_05": false
+        }
+      },
+      "tost": {
+        "readme_md_vs_bare_rds": {
+          "n_pairs": 120,
+          "mean_diff": 0.6167,
+          "se": 0.0446,
+          "ci90_low": 0.5428,
+          "ci90_high": 0.6906,
+          "margins": {
+            "delta_5pct": {
+              "delta": 0.05,
+              "non_inferior": true,
+              "equivalent": false,
+              "non_inferior_p": 0.0,
+              "tost_p": 1.0
+            },
+            "delta_10pct": {
+              "delta": 0.1,
+              "non_inferior": true,
+              "equivalent": false,
+              "non_inferior_p": 0.0,
+              "tost_p": 1.0
+            }
+          }
+        },
+        "readme_md_vs_raw_owl": {
+          "n_pairs": 120,
+          "mean_diff": 0.0,
+          "se": 0.0,
+          "ci90_low": 0.0,
+          "ci90_high": 0.0,
+          "margins": {
+            "delta_5pct": {
+              "delta": 0.05,
+              "non_inferior": true,
+              "equivalent": true,
+              "non_inferior_p": 0.0,
+              "tost_p": 0.0
+            },
+            "delta_10pct": {
+              "delta": 0.1,
+              "non_inferior": true,
+              "equivalent": true,
+              "non_inferior_p": 0.0,
+              "tost_p": 0.0
+            }
+          }
+        },
+        "readme_md_vs_owl_reasoner": {
+          "n_pairs": 120,
+          "mean_diff": 0.0,
+          "se": 0.0,
+          "ci90_low": 0.0,
+          "ci90_high": 0.0,
+          "margins": {
+            "delta_5pct": {
+              "delta": 0.05,
+              "non_inferior": true,
+              "equivalent": true,
+              "non_inferior_p": 0.0,
+              "tost_p": 0.0
+            },
+            "delta_10pct": {
+              "delta": 0.1,
+              "non_inferior": true,
+              "equivalent": true,
+              "non_inferior_p": 0.0,
+              "tost_p": 0.0
+            }
+          }
+        },
+        "owl_reasoner_vs_raw_owl": {
+          "n_pairs": 120,
+          "mean_diff": 0.0,
+          "se": 0.0,
+          "ci90_low": 0.0,
+          "ci90_high": 0.0,
+          "margins": {
+            "delta_5pct": {
+              "delta": 0.05,
+              "non_inferior": true,
+              "equivalent": true,
+              "non_inferior_p": 0.0,
+              "tost_p": 0.0
+            },
+            "delta_10pct": {
+              "delta": 0.1,
+              "non_inferior": true,
+              "equivalent": true,
+              "non_inferior_p": 0.0,
+              "tost_p": 0.0
+            }
+          }
+        }
+      },
+      "task_matrix": [
+        {
+          "task_id": "T1_01",
+          "tier": 1,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T1_02",
+          "tier": 1,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T1_03",
+          "tier": 1,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T1_04",
+          "tier": 1,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T1_05",
+          "tier": 1,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T1_06",
+          "tier": 1,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T1_07",
+          "tier": 1,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T1_08",
+          "tier": 1,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T1_09",
+          "tier": 1,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T1_10",
+          "tier": 1,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T2_01",
+          "tier": 2,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T2_02",
+          "tier": 2,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T2_03",
+          "tier": 2,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T2_04",
+          "tier": 2,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T2_05",
+          "tier": 2,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T2_06",
+          "tier": 2,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T2_07",
+          "tier": 2,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T2_08",
+          "tier": 2,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T2_09",
+          "tier": 2,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T2_10",
+          "tier": 2,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T3_01",
+          "tier": 3,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T3_02",
+          "tier": 3,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T3_03",
+          "tier": 3,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T3_04",
+          "tier": 3,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T3_05",
+          "tier": 3,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T3_06",
+          "tier": 3,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T3_07",
+          "tier": 3,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T3_08",
+          "tier": 3,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T3_09",
+          "tier": 3,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T3_10",
+          "tier": 3,
+          "bare_rds": {
+            "passed": 3,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T4_01",
+          "tier": 4,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T4_02",
+          "tier": 4,
+          "bare_rds": {
+            "passed": 1,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T4_03",
+          "tier": 4,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T4_04",
+          "tier": 4,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T4_05",
+          "tier": 4,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T4_06",
+          "tier": 4,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T4_07",
+          "tier": 4,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T4_08",
+          "tier": 4,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T4_09",
+          "tier": 4,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        },
+        {
+          "task_id": "T4_10",
+          "tier": 4,
+          "bare_rds": {
+            "passed": 0,
+            "total": 3
+          },
+          "readme_md": {
+            "passed": 3,
+            "total": 3
+          },
+          "raw_owl": {
+            "passed": 3,
+            "total": 3
+          },
+          "owl_reasoner": {
+            "passed": 3,
+            "total": 3
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+.venv/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.DS_Store
+
+# Ephemeral smoke / intermediate runs (keep the 480-eval benchmark results tracked)
+results/mock_smoke/
+results/deepseek_v41_flash_smoke/

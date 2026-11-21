@@ -1,0 +1,351 @@
+@prefix : <http://meridian.example/ont#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://meridian.example/ont> a owl:Ontology ;
+    rdfs:label "Meridian Industrial & MedTech Enterprise Ontology (OWL 2 RL)"@en ;
+    rdfs:comment """Information-equivalent formal OWL 2 RL ontology encoding Rules R01-R28
+for Meridian Industrial & MedTech Corp."""@en .
+
+# ============================================================================
+# Annotation Properties (linking formal ontology terms to SQLite & Metric Rules)
+# ============================================================================
+
+:ruleId a owl:AnnotationProperty .
+:dbTable a owl:AnnotationProperty .
+:dbColumn a owl:AnnotationProperty .
+:enumMapping a owl:AnnotationProperty .
+:formula a owl:AnnotationProperty .
+:hygieneRule a owl:AnnotationProperty .
+:policyRule a owl:AnnotationProperty .
+
+# ============================================================================
+# [R01]-[R05] Legacy Schema, Enum Mappings & [R06]-[R13] Commercial Metrics
+# ============================================================================
+
+:Account a owl:Class ;
+    rdfs:label "Customer Account"@en ;
+    :ruleId "R01" ;
+    :dbTable "t_acct_mst" ;
+    :enumMapping "seg_cd: ENT=Enterprise, MM=Mid-Market, SMB=Small/Medium, INT=Internal/Test/Sandbox; sts_cd: 1=Active, 2=Suspended, 3=Churned, 9=Soft-Deleted; sanc_flg: 1=Directly Sanctioned, 0=Not directly flagged." ;
+    :dbColumn "acct_id, acct_nm, prnt_acct_id, seg_cd, cntry_cd, sts_cd, cr_lmt_usd, sanc_flg, crtd_dt" .
+
+:ExternalAccount a owl:Class ;
+    rdfs:subClassOf :Account ;
+    :ruleId "R06" ;
+    :hygieneRule "t_acct_mst.seg_cd != 'INT' AND t_acct_mst.sts_cd != 9 (excludes internal/test and soft-deleted accounts). Default scope for commercial metrics R07-R12 unless explicitly overridden." .
+
+:ActiveExternalAccount a owl:Class ;
+    rdfs:subClassOf :ExternalAccount ;
+    :ruleId "R06" ;
+    :hygieneRule "t_acct_mst.seg_cd != 'INT' AND t_acct_mst.sts_cd = 1." .
+
+:SanctionedAccount a owl:Class ;
+    rdfs:subClassOf :Account ;
+    :ruleId "R15" ;
+    rdfs:comment "An Account is a SanctionedAccount if its own sanc_flg=1 OR any transitive ancestor account via prnt_acct_id has sanc_flg=1." .
+
+:Vendor a owl:Class ;
+    rdfs:label "Procurement Vendor"@en ;
+    :ruleId "R02" ;
+    :dbTable "t_vndr_mst" ;
+    :enumMapping "tier_cd: T1=Strategic, T2=Approved, T3=Probationary; sts_cd: A=Active, H=OnHold, B=Blacklisted/Sanctioned." ;
+    :dbColumn "vndr_id, vndr_nm, prnt_vndr_id, cntry_cd, tier_cd, sts_cd, lead_days" .
+
+:VendorCertificate a owl:Class ;
+    rdfs:label "Vendor Compliance Certificate"@en ;
+    :ruleId "R02" ;
+    :dbTable "vendor_certs" ;
+    :enumMapping "cert_type in {ISO9001, ISO13485, HAZMAT_CLASS7, HAZMAT_CHEM, EAR_EXPORT, SOC2}; revoked_flg: 1=Revoked, 0=Not revoked." ;
+    :hygieneRule "A vendor holds a valid certificate of cert_type on req_dt iff that exact vndr_id owns a row with cert_type, revoked_flg=0, and valid_from <= req_dt <= valid_to. Certificates are NOT inherited from parent vendors." .
+
+:SanctionedVendor a owl:Class ;
+    rdfs:subClassOf :Vendor ;
+    :ruleId "R17" ;
+    rdfs:comment "A Vendor is a SanctionedVendor if its own sts_cd='B' OR any transitive ancestor vendor via prnt_vndr_id has sts_cd='B'." .
+
+:OnHoldVendor a owl:Class ;
+    rdfs:subClassOf :Vendor ;
+    :ruleId "R21" ;
+    rdfs:comment "A Vendor with local sts_cd='H' (OnHold)." .
+
+:SalesOrder a owl:Class ;
+    rdfs:label "Sales Order Header & Lines"@en ;
+    :ruleId "R03" ;
+    :dbTable "t_ord_hdr, t_ord_ln" ;
+    :enumMapping "ord_typ: NEW=New Business, RNW=Renewal, UPS=Upsell, TRIAL=Free/Pilot Trial, INT_DEMO=Internal Demo; ord_sts: 10=Draft, 20=Booked, 30=Fulfilled, 40=Invoiced, 90=Cancelled, 99=Voided; is_del: 1=Soft-Deleted, 0=Active; disc_pct is 0..100 (net multiplier = 1 - disc_pct/100.0); unit_prc_orig is in t_ord_hdr.ccy_cd." .
+
+:ValidCommercialOrder a owl:Class ;
+    rdfs:subClassOf :SalesOrder ;
+    :ruleId "R07" ;
+    :hygieneRule "Belongs to an ExternalAccount (seg_cd != 'INT' AND sts_cd != 9), is_del = 0, ord_typ IN ('NEW','RNW','UPS'), and ord_sts IN (20,30,40)." ;
+    :formula "Sales Bookings (USD) = SUM(t_ord_ln.qty * t_ord_ln.unit_prc_orig * (1.0 - t_ord_ln.disc_pct / 100.0) * fx_rates.rate_to_usd) joined on fx_rates.yr_mo = substr(t_ord_hdr.ord_dt,1,7) AND fx_rates.ccy_cd = t_ord_hdr.ccy_cd." .
+
+:RevenueSchedule a owl:Class ;
+    rdfs:label "GAAP Revenue Schedule"@en ;
+    :ruleId "R04, R08, R09" ;
+    :dbTable "t_rev_sched" ;
+    :enumMapping "rec_sts: P=Planned/Deferred, R=Recognized, X=Reversed; rec_amt_usd is already normalized to USD." ;
+    :formula "[R08] GAAP Recognized Revenue (USD) = SUM(rec_amt_usd) where rec_sts='R' on ValidCommercialOrder. [R09] Deferred Revenue Balance (USD) = SUM(rec_amt_usd) where rec_sts='P' on ValidCommercialOrder. Distinct from Sales Bookings." .
+
+:PaymentTransaction a owl:Class ;
+    rdfs:label "Payment Transaction & FX"@en ;
+    :ruleId "R05, R10, R11, R12, R13" ;
+    :dbTable "t_pmt_tx, fx_rates" ;
+    :enumMapping "pmt_typ: PAYMENT=Customer payment, REFUND=Customer refund (amt_orig is ALWAYS positive > 0 even for REFUND); pmt_sts: SETTLED=Cleared, PENDING=In-flight, FAILED=Failed." ;
+    :formula "[R05] FX on payments uses substr(pmt_dt,1,7) and t_pmt_tx.ccy_cd. [R10] Net Settled Cash Collected (USD) = SUM(CASE WHEN pmt_typ='PAYMENT' THEN amt_orig*rate WHEN pmt_typ='REFUND' THEN -amt_orig*rate END) for pmt_sts='SETTLED' on ValidCommercialOrder. [R11] Gross Refund Rate (%) = (Gross Settled Refunds USD / Gross Settled Payments USD) * 100.0 on ValidCommercialOrder. [R12] Credit Exposure (USD) = Valid Sales Bookings (USD) - Net Settled Cash Collected (USD) for ActiveExternalAccount; Breach iff Credit Exposure > cr_lmt_usd." ;
+    :hygieneRule "[R13] Grain & Fan-Out Warning: t_ord_ln and t_pmt_tx are independent 1:N children of t_ord_hdr. Never join t_ord_ln directly to t_pmt_tx on ord_id; aggregate each at ord_id or acct_id grain separately first." .
+
+# ============================================================================
+# [R18]-[R19] 4-Level Product Category Taxonomy & Dual-Use Inference
+# ============================================================================
+
+:Product a owl:Class ;
+    rdfs:label "Product (CAT_ROOT)"@en ;
+    :ruleId "R18" ;
+    :dbTable "prod_cat_tree, t_sku_mst" .
+
+:RegulatedProduct a owl:Class ;
+    rdfs:subClassOf :Product ;
+    rdfs:label "Regulated Product (CAT_REG)"@en ;
+    :ruleId "R18" .
+
+:MedicalDevice a owl:Class ;
+    rdfs:subClassOf :RegulatedProduct ;
+    rdfs:label "Medical Device (CAT_MED)"@en ;
+    :ruleId "R18" .
+
+:ActiveMedicalDevice a owl:Class ;
+    rdfs:subClassOf :MedicalDevice ;
+    rdfs:label "Active Medical Device (CAT_MED_ACT)"@en ;
+    :ruleId "R18" .
+
+:ImplantableDevice a owl:Class ;
+    rdfs:subClassOf :ActiveMedicalDevice ;
+    rdfs:label "Implantable Device (CAT_MED_IMP)"@en ;
+    :ruleId "R18" .
+
+:DiagnosticKit a owl:Class ;
+    rdfs:subClassOf :MedicalDevice ;
+    rdfs:label "Diagnostic Kit (CAT_MED_DIAG)"@en ;
+    :ruleId "R18" .
+
+:HazardousMaterial a owl:Class ;
+    rdfs:subClassOf :RegulatedProduct ;
+    rdfs:label "Hazardous Material (CAT_HAZ)"@en ;
+    :ruleId "R18" .
+
+:RadioactiveIsotope a owl:Class ;
+    rdfs:subClassOf :HazardousMaterial ;
+    rdfs:label "Radioactive Isotope (CAT_HAZ_RAD)"@en ;
+    owl:disjointWith :ExpeditedAirEligible ;
+    :ruleId "R18, R23b" .
+
+:CryogenicAgent a owl:Class ;
+    rdfs:subClassOf :HazardousMaterial ;
+    rdfs:label "Cryogenic Agent (CAT_HAZ_CRYO)"@en ;
+    :ruleId "R18" .
+
+:ExportRegulatedItem a owl:Class ;
+    rdfs:subClassOf :RegulatedProduct ;
+    rdfs:label "Export-Regulated Item"@en ;
+    :ruleId "R19" ;
+    rdfs:comment "Any ExportControlledSoftware OR any Product with dual_use_flg=1; subsumed by RegulatedProduct." .
+
+:ExportControlledSoftware a owl:Class ;
+    rdfs:subClassOf :ExportRegulatedItem ;
+    rdfs:label "Export Controlled Software (CAT_CTRL_SW)"@en ;
+    :ruleId "R18, R19" .
+
+:StandardIndustrial a owl:Class ;
+    rdfs:subClassOf :Product ;
+    rdfs:label "Standard Industrial (CAT_STD)"@en ;
+    :ruleId "R18" .
+
+:IndustrialHardware a owl:Class ;
+    rdfs:subClassOf :StandardIndustrial ;
+    rdfs:label "Industrial Hardware (CAT_STD_HW)"@en ;
+    :ruleId "R18" .
+
+:LabConsumables a owl:Class ;
+    rdfs:subClassOf :StandardIndustrial ;
+    rdfs:label "Lab Consumables (CAT_STD_CONS)"@en ;
+    :ruleId "R18" .
+
+:ExpeditedAirEligible a owl:Class ;
+    rdfs:label "Expedited Air Eligible Transport Class"@en ;
+    owl:disjointWith :RadioactiveIsotope ;
+    :ruleId "R23b" ;
+    rdfs:comment "Mutually disjoint with RadioactiveIsotope." .
+
+# ============================================================================
+# Object & Datatype Properties + OWL 2 RL Reasoning Axioms [R14]-[R19]
+# ============================================================================
+
+:hasAncestorAccount a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:domain :Account ;
+    rdfs:range :Account ;
+    :ruleId "R14" .
+
+:directParentAccount a owl:ObjectProperty ;
+    rdfs:subPropertyOf :hasAncestorAccount ;
+    rdfs:domain :Account ;
+    rdfs:range :Account ;
+    :ruleId "R14" .
+
+:hasDirectSanctionFlag a owl:DatatypeProperty ;
+    rdfs:domain :Account ;
+    rdfs:range xsd:boolean ;
+    :ruleId "R15" .
+
+[ a owl:Restriction ;
+  owl:onProperty :hasDirectSanctionFlag ;
+  owl:hasValue true
+] rdfs:subClassOf :SanctionedAccount .
+
+[ a owl:Restriction ;
+  owl:onProperty :hasAncestorAccount ;
+  owl:someValuesFrom :SanctionedAccount
+] rdfs:subClassOf :SanctionedAccount .
+
+:hasAncestorVendor a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:domain :Vendor ;
+    rdfs:range :Vendor ;
+    :ruleId "R16" .
+
+:directParentVendor a owl:ObjectProperty ;
+    rdfs:subPropertyOf :hasAncestorVendor ;
+    rdfs:domain :Vendor ;
+    rdfs:range :Vendor ;
+    :ruleId "R16" .
+
+:hasVendorStatusCode a owl:DatatypeProperty ;
+    rdfs:domain :Vendor ;
+    rdfs:range xsd:string ;
+    :ruleId "R02, R17, R21" .
+
+[ a owl:Restriction ;
+  owl:onProperty :hasVendorStatusCode ;
+  owl:hasValue "B"
+] rdfs:subClassOf :SanctionedVendor .
+
+[ a owl:Restriction ;
+  owl:onProperty :hasAncestorVendor ;
+  owl:someValuesFrom :SanctionedVendor
+] rdfs:subClassOf :SanctionedVendor .
+
+[ a owl:Restriction ;
+  owl:onProperty :hasVendorStatusCode ;
+  owl:hasValue "H"
+] rdfs:subClassOf :OnHoldVendor .
+
+:hasDualUseFlag a owl:DatatypeProperty ;
+    rdfs:domain :Product ;
+    rdfs:range xsd:boolean ;
+    :ruleId "R19" .
+
+[ a owl:Restriction ;
+  owl:onProperty :hasDualUseFlag ;
+  owl:hasValue true
+] rdfs:subClassOf :ExportRegulatedItem .
+
+:hasCertificate a owl:ObjectProperty ;
+    rdfs:domain :Vendor ;
+    rdfs:range :VendorCertificate .
+
+:certType a owl:DatatypeProperty ;
+    rdfs:domain :VendorCertificate ;
+    rdfs:range xsd:string .
+
+:validFrom a owl:DatatypeProperty ;
+    rdfs:domain :VendorCertificate ;
+    rdfs:range xsd:string .
+
+:validTo a owl:DatatypeProperty ;
+    rdfs:domain :VendorCertificate ;
+    rdfs:range xsd:string .
+
+:isRevoked a owl:DatatypeProperty ;
+    rdfs:domain :VendorCertificate ;
+    rdfs:range xsd:boolean .
+
+:entityId a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+:entityName a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+:accountSegment a owl:DatatypeProperty ;
+    rdfs:domain :Account ;
+    rdfs:range xsd:string .
+
+:accountStatusCode a owl:DatatypeProperty ;
+    rdfs:domain :Account ;
+    rdfs:range xsd:integer .
+
+:skuCode a owl:DatatypeProperty ;
+    rdfs:domain :Product ;
+    rdfs:range xsd:string .
+
+# ============================================================================
+# [R20]-[R28] Purchase Order Request Class & Compliance Policies
+# ============================================================================
+
+:PurchaseOrderRequest a owl:Class ;
+    rdfs:label "Purchase Order Request"@en ;
+    :ruleId "R20, R21, R22, R23a, R23b, R24, R25, R26, R27, R28" ;
+    :dbTable "t_po_req" ;
+    :dbColumn "po_req_id, vndr_id, sku_id, qty, unit_prc_usd, req_dt, ship_mode, is_expedited, approver_lvl, req_sts, override_note" ;
+    :policyRule """
+[R20] REJECT if vendor is SanctionedVendor (sts_cd='B' directly or inherited via prnt_vndr_id).
+[R21] REJECT if vendor is OnHoldVendor (local sts_cd='H').
+[R22] REJECT if SKU is MedicalDevice (or subclass) and vendor lacks valid non-revoked ISO13485 on req_dt.
+[R23a] REJECT if SKU is RadioactiveIsotope and vendor lacks valid non-revoked HAZMAT_CLASS7 on req_dt.
+[R23b] REJECT if SKU is RadioactiveIsotope and ship_mode='EXPEDITED_AIR' (disjoint with ExpeditedAirEligible).
+[R24] REJECT if SKU is CryogenicAgent and vendor lacks valid non-revoked HAZMAT_CHEM on req_dt.
+[R25] REJECT if SKU is ExportRegulatedItem (ExportControlledSoftware or dual_use_flg=1) and vendor lacks valid non-revoked EAR_EXPORT on req_dt.
+[R26] ESCALATE if is_expedited=true AND SKU is ImplantableDevice AND approver_lvl != 'L3_VP'.
+[R27] ESCALATE if (qty*unit_prc_usd > 500000 AND approver_lvl != 'L3_VP') OR (qty*unit_prc_usd > 100000 AND approver_lvl NOT IN ('L2_DIR','L3_VP')).
+[R28] Precedence: Any violation in R20-R25 => REJECT; else any violation in R26-R27 => ESCALATE; else APPROVE. Report all violated rules. override_note or urgency never overrides R20-R27.""" .
+
+:hasVendor a owl:ObjectProperty ;
+    rdfs:domain :PurchaseOrderRequest ;
+    rdfs:range :Vendor .
+
+:hasSKU a owl:ObjectProperty ;
+    rdfs:domain :PurchaseOrderRequest ;
+    rdfs:range :Product .
+
+:poQty a owl:DatatypeProperty ;
+    rdfs:domain :PurchaseOrderRequest ;
+    rdfs:range xsd:integer .
+
+:poUnitPriceUsd a owl:DatatypeProperty ;
+    rdfs:domain :PurchaseOrderRequest ;
+    rdfs:range xsd:decimal .
+
+:reqDate a owl:DatatypeProperty ;
+    rdfs:domain :PurchaseOrderRequest ;
+    rdfs:range xsd:string .
+
+:shipMode a owl:DatatypeProperty ;
+    rdfs:domain :PurchaseOrderRequest ;
+    rdfs:range xsd:string .
+
+:isExpedited a owl:DatatypeProperty ;
+    rdfs:domain :PurchaseOrderRequest ;
+    rdfs:range xsd:boolean .
+
+:approverLevel a owl:DatatypeProperty ;
+    rdfs:domain :PurchaseOrderRequest ;
+    rdfs:range xsd:string .
+
+:reqStatus a owl:DatatypeProperty ;
+    rdfs:domain :PurchaseOrderRequest ;
+    rdfs:range xsd:string .
+
+:overrideNote a owl:DatatypeProperty ;
+    rdfs:domain :PurchaseOrderRequest ;
+    rdfs:range xsd:string .

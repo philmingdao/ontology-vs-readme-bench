@@ -1,0 +1,222 @@
+@prefix : <http://meridian.example/ont#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+:MeridianPrefixes a sh:PrefixDeclaration ;
+    sh:declare [
+        sh:prefix "" ;
+        sh:namespace "http://meridian.example/ont#"^^xsd:anyURI ;
+    ] ;
+    sh:declare [
+        sh:prefix "rdf" ;
+        sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI ;
+    ] ;
+    sh:declare [
+        sh:prefix "xsd" ;
+        sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ;
+    ] .
+
+# [R20] Sanctioned Vendor Policy (REJECT)
+:RuleR20Shape a sh:NodeShape ;
+    sh:targetClass :PurchaseOrderRequest ;
+    sh:severity sh:Violation ;
+    :ruleId "R20" ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "R20: Vendor is a SanctionedVendor (directly blacklisted or inherited via parent vendor hierarchy)." ;
+        sh:prefixes :MeridianPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this :hasVendor ?v .
+                ?v a :SanctionedVendor .
+            }
+        """ ;
+    ] .
+
+# [R21] On-Hold Vendor Policy (REJECT)
+:RuleR21Shape a sh:NodeShape ;
+    sh:targetClass :PurchaseOrderRequest ;
+    sh:severity sh:Violation ;
+    :ruleId "R21" ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "R21: Vendor status is OnHold (sts_cd='H')." ;
+        sh:prefixes :MeridianPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this :hasVendor ?v .
+                ?v a :OnHoldVendor .
+            }
+        """ ;
+    ] .
+
+# [R22] Medical Device ISO 13485 Policy (REJECT)
+:RuleR22Shape a sh:NodeShape ;
+    sh:targetClass :PurchaseOrderRequest ;
+    sh:severity sh:Violation ;
+    :ruleId "R22" ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "R22: MedicalDevice SKU requires vendor to hold valid, non-revoked ISO13485 certification on req_dt." ;
+        sh:prefixes :MeridianPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this :hasVendor ?v ;
+                      :hasSKU ?sku ;
+                      :reqDate ?dt .
+                ?sku a :MedicalDevice .
+                FILTER NOT EXISTS {
+                    ?v :hasCertificate ?c .
+                    ?c :certType "ISO13485" ;
+                       :isRevoked false ;
+                       :validFrom ?vf ;
+                       :validTo ?vt .
+                    FILTER (?vf <= ?dt && ?dt <= ?vt)
+                }
+            }
+        """ ;
+    ] .
+
+# [R23a] Radioactive Isotope HAZMAT_CLASS7 Policy (REJECT)
+:RuleR23aShape a sh:NodeShape ;
+    sh:targetClass :PurchaseOrderRequest ;
+    sh:severity sh:Violation ;
+    :ruleId "R23a" ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "R23a: RadioactiveIsotope SKU requires vendor to hold valid, non-revoked HAZMAT_CLASS7 certification on req_dt." ;
+        sh:prefixes :MeridianPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this :hasVendor ?v ;
+                      :hasSKU ?sku ;
+                      :reqDate ?dt .
+                ?sku a :RadioactiveIsotope .
+                FILTER NOT EXISTS {
+                    ?v :hasCertificate ?c .
+                    ?c :certType "HAZMAT_CLASS7" ;
+                       :isRevoked false ;
+                       :validFrom ?vf ;
+                       :validTo ?vt .
+                    FILTER (?vf <= ?dt && ?dt <= ?vt)
+                }
+            }
+        """ ;
+    ] .
+
+# [R23b] Radioactive Isotope Expedited Air Ban (REJECT)
+:RuleR23bShape a sh:NodeShape ;
+    sh:targetClass :PurchaseOrderRequest ;
+    sh:severity sh:Violation ;
+    :ruleId "R23b" ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "R23b: RadioactiveIsotope is disjoint from ExpeditedAirEligible and cannot ship via EXPEDITED_AIR." ;
+        sh:prefixes :MeridianPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this :hasSKU ?sku ;
+                      :shipMode "EXPEDITED_AIR" .
+                ?sku a :RadioactiveIsotope .
+            }
+        """ ;
+    ] .
+
+# [R24] Cryogenic Agent HAZMAT_CHEM Policy (REJECT)
+:RuleR24Shape a sh:NodeShape ;
+    sh:targetClass :PurchaseOrderRequest ;
+    sh:severity sh:Violation ;
+    :ruleId "R24" ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "R24: CryogenicAgent SKU requires vendor to hold valid, non-revoked HAZMAT_CHEM certification on req_dt." ;
+        sh:prefixes :MeridianPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this :hasVendor ?v ;
+                      :hasSKU ?sku ;
+                      :reqDate ?dt .
+                ?sku a :CryogenicAgent .
+                FILTER NOT EXISTS {
+                    ?v :hasCertificate ?c .
+                    ?c :certType "HAZMAT_CHEM" ;
+                       :isRevoked false ;
+                       :validFrom ?vf ;
+                       :validTo ?vt .
+                    FILTER (?vf <= ?dt && ?dt <= ?vt)
+                }
+            }
+        """ ;
+    ] .
+
+# [R25] Export-Regulated Item EAR_EXPORT Policy (REJECT)
+:RuleR25Shape a sh:NodeShape ;
+    sh:targetClass :PurchaseOrderRequest ;
+    sh:severity sh:Violation ;
+    :ruleId "R25" ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "R25: ExportRegulatedItem (ExportControlledSoftware or dual_use_flg=1) requires valid, non-revoked EAR_EXPORT certification on req_dt." ;
+        sh:prefixes :MeridianPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this :hasVendor ?v ;
+                      :hasSKU ?sku ;
+                      :reqDate ?dt .
+                ?sku a :ExportRegulatedItem .
+                FILTER NOT EXISTS {
+                    ?v :hasCertificate ?c .
+                    ?c :certType "EAR_EXPORT" ;
+                       :isRevoked false ;
+                       :validFrom ?vf ;
+                       :validTo ?vt .
+                    FILTER (?vf <= ?dt && ?dt <= ?vt)
+                }
+            }
+        """ ;
+    ] .
+
+# [R26] Expedited Implantable Device VP Approval Policy (ESCALATE)
+:RuleR26Shape a sh:NodeShape ;
+    sh:targetClass :PurchaseOrderRequest ;
+    sh:severity sh:Warning ;
+    :ruleId "R26" ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "R26: Expedited PO for ImplantableDevice requires L3_VP approval." ;
+        sh:prefixes :MeridianPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this :hasSKU ?sku ;
+                      :isExpedited true ;
+                      :approverLevel ?lvl .
+                ?sku a :ImplantableDevice .
+                FILTER (?lvl != "L3_VP")
+            }
+        """ ;
+    ] .
+
+# [R27] High-Value PO Approval Threshold Policy (ESCALATE)
+:RuleR27Shape a sh:NodeShape ;
+    sh:targetClass :PurchaseOrderRequest ;
+    sh:severity sh:Warning ;
+    :ruleId "R27" ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "R27: PO value exceeds approval authority threshold (>100k requires L2_DIR/L3_VP; >500k requires L3_VP)." ;
+        sh:prefixes :MeridianPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this :poQty ?q ;
+                      :poUnitPriceUsd ?p ;
+                      :approverLevel ?lvl .
+                BIND (?q * ?p AS ?val)
+                FILTER (
+                    (?val > 500000 && ?lvl != "L3_VP") ||
+                    (?val > 100000 && ?lvl != "L2_DIR" && ?lvl != "L3_VP")
+                )
+            }
+        """ ;
+    ] .
